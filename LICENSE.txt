@@ -1,0 +1,25 @@
+Copyright (C) 2009 - 2014 Luca Mingardi.
+
+JeeObserver License v 1.0
+
+Definitions
+
+1.  JeeObserver Package is defined as all of the files within any archive
+    file or any group of files included.
+
+2.  Modification is defined as instructions, to be performed manually or in an
+    automated manner, that alter any part of JeeObserver Package.
+
+3.  JeeObserver Modified Package is defined as JeeObserver Package or a
+    derivative of it with one or more Modification applied to it.
+
+4.  JeeObserver Software is defined as an installed copy of JeeObserver Package.
+
+
+Agreement
+
+1.  JeeObserver Software may be used by any commercial and non-commercial
+    software.
+
+2.  JeeObserver Package or JeeObserver Modified Packages may not be sold or
+    released under any paid license.
