@@ -1,0 +1,9 @@
+<%@ page pageEncoding="UTF-8" %>
+<%@page import="utilities.ApplicationUtilities"%>
+<div class="informationPanel">
+    <b><%= ApplicationUtilities.getMessage("message_NoStatisticsToShow")%></b>
+    <ul>
+        <li><%= ApplicationUtilities.getMessage("message_ChangeResearchFilterParameters")%>.</li>
+        <li><%= ApplicationUtilities.getMessage("message_JeeObserverNotConfigured")%>. ( <a href="http://www.jeeobserver.com/documentation/"><%= ApplicationUtilities.getMessage("label_OnlineDocumentation")%></a> )</li>
+    </ul>
+</div>

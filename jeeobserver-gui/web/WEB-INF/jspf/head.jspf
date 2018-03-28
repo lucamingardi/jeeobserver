@@ -1,0 +1,476 @@
+<%@page import="jeeobserver.JeeObserverContext"%>
+<%@page import="utilities.ApplicationUtilities"%>
+<%@page import="login.ApplicationSessionBean"%>
+<%@ page pageEncoding="UTF-8" %>
+
+
+<%
+    ApplicationSessionBean headApplicationBean = ApplicationUtilities.getApplicationSessionBean(request);
+
+    String servletPath = "";
+
+    if (headApplicationBean != null) {
+        servletPath = headApplicationBean.getCurrentServlet();
+    }
+%>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>JeeObserver GUI <%=JeeObserverContext.VERSION[0] + "." + JeeObserverContext.VERSION[1]%></title>
+
+<link type="text/css" rel="stylesheet" href="<%= request.getContextPath()%>/css/style.css" />
+<link type="text/css" rel="stylesheet" href="<%= request.getContextPath()%>/css/skin/default/style_default.css" />
+<link type="text/css" rel="stylesheet" href="<%= request.getContextPath()%>/css/jquery/jquery-ui-1.9.2.custom.css" media="screen" />
+<link type="text/css" rel="stylesheet" href="<%= request.getContextPath()%>/css/jquery/jquery-ui-timepicker-addon.css" media="screen" />
+<link type="text/css" rel="stylesheet" href="<%= request.getContextPath()%>/css/jquery/jquery-te-1.4.0.css" media="screen" />
+
+<script type="text/javascript" src="<%= request.getContextPath()%>/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="<%= request.getContextPath()%>/js/jquery-ui-1.10.2.custom.js"></script>
+
+<script type="text/javascript" src="<%= request.getContextPath()%>/js/jquery-ui-timepicker-addon.js"></script>
+
+<script type="text/javascript" src="<%= request.getContextPath()%>/js/jquery-te-1.4.0.js"></script>
+
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script>
+
+    $(document).ready(function() {
+
+        //Funzioni per i pulsanti del menu
+        $("#menuButtonStatistics").click(function() {
+            //$("#menuStatisticsPopup").css('z-index', 1); Serve per il drag
+            $("#menuStatisticsPopup").toggle();
+            $("#menuSearchPopup").hide();
+            $("#menuRulePopup").hide();
+        });
+
+        $("#menuButtonStatistics").click(function(e) {
+            //e.stopPropagation();
+        });
+
+
+        $("#menuButtonSearch").click(function() {
+            //$("#menuSearchPopup").css('z-index', 1); Serve per il drag
+            $("#menuSearchPopup").toggle();
+            $("#menuStatisticsPopup").hide();
+            $("#menuRulePopup").hide();
+        });
+
+        $("#menuButtonSearch").click(function(e) {
+            //e.stopPropagation();
+        });
+
+        $("#menuButtonRule").click(function() {
+            //$("#menuStatisticsPopup").css('z-index', 1); Serve per il drag
+            $("#menuRulePopup").toggle();
+            $("#menuStatisticsPopup").hide();
+            $("#menuSearchPopup").hide();
+
+        });
+
+
+        //Hide all menus on document click
+        $(document.body).click(function() {
+            //$("#menuStatisticsPopup").hide();
+            //$("#menuSearchPopup").hide();
+            //$("#menuSearchPopup").hide();
+        });
+
+
+        //Handle body container
+        $(".bodySeparatorButton").click(function() {
+            $(this).parent().next().slideToggle("fast",
+                    function() {
+                        $value = true;
+                        if ($(this).is(":visible")) {
+                            $value = false;
+                        }
+
+                        $.ajax({
+                            type: 'POST',
+                            url: "<%= request.getContextPath()%>/secure/common?action=ajaxActionTogglePanel",
+                            //Input parameters
+                            data: {panel: $(this).attr("id"), value: $value},
+                            success: function(response) {
+
+                            }
+                        });
+                    });
+        });
+
+
+
+        //-------------------------------
+
+        $(document).on("click", ".selectElement", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/common?action=ajaxActionSelectResultsRow",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable");
+                    $("#bodyChartImage").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyChartImage");
+                }
+            });
+        });
+
+        $(document).on("click", ".selectStatistics", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/common?action=ajaxActionSelectStatistics",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#bodyChartImage").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyChartImage");
+                    $("#bodyChartLegend").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyChartLegend");
+                }
+            });
+        });
+
+
+        $(document).on("click", ".selectSamplingPeriod", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/common?action=ajaxActionSelectSamplingPeriod",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#bodyChartImage").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyChartImage");
+                    $("#bodyChartLegend").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyChartLegend");
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable");
+                }
+            });
+        });
+
+        $(document).on("click", ".selectLogScale", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/common?action=ajaxActionSelectLogScale",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#bodyChartImage").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyChartImage");
+                    $("#bodyChartLegend").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyChartLegend");
+                }
+            });
+        });
+
+        $(document).on("click", ".selectTrendLines", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/common?action=ajaxActionSelectTrendLines",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#bodyChartImage").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyChartImage");
+                    $("#bodyChartLegend").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyChartLegend");
+                }
+            });
+        });
+
+        $(document).on("click", ".sortColumn", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/common?action=ajaxActionSortResults",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable");
+                }
+            });
+        });
+
+
+
+
+        /*Research filter*/
+        $(document).on("click", ".menuResearchFilterContext", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/researchFilter?action=ajaxActionToggleContext",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#menuResearchFilterContext").load("<%= request.getContextPath()%>/secure/researchFilter?action=ajaxRenderResearchFilterContext");
+                    $("#menuResearchFilterPath").load("<%= request.getContextPath()%>/secure/researchFilter?action=ajaxRenderResearchFilterPath");
+                    $("#menuResearchFilterProject").load("<%= request.getContextPath()%>/secure/researchFilter?action=ajaxRenderResearchFilterProject");
+                }
+            });
+        });
+
+        $(document).on("click", ".menuResearchFilterPath", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/researchFilter?action=ajaxActionTogglePath",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#menuResearchFilterPath").load("<%= request.getContextPath()%>/secure/researchFilter?action=ajaxRenderResearchFilterPath");
+                }
+            });
+        });
+
+        $(document).on("click", ".menuResearchFilterProject", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/researchFilter?action=ajaxActionToggleProject",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#menuResearchFilterProject").load("<%= request.getContextPath()%>/secure/researchFilter?action=ajaxRenderResearchFilterProject");
+                    $("#menuResearchFilterGrouping").load("<%= request.getContextPath()%>/secure/researchFilter?action=ajaxRenderResearchFilterGrouping");
+                }
+            });
+        });
+
+        $(document).on("click", ".menuResearchFilterElementRegex", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/researchFilter?action=ajaxActionToggleElementRegex",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#menuResearchFilterElement").load("<%= request.getContextPath()%>/secure/researchFilter?action=ajaxRenderResearchFilterElement");
+                }
+            });
+        });
+
+        $(document).on("click", ".menuResearchFilterGrouping", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/researchFilter?action=ajaxActionToggleGrouping",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#menuResearchFilterProject").load("<%= request.getContextPath()%>/secure/researchFilter?action=ajaxRenderResearchFilterProject");
+                    $("#menuResearchFilterGrouping").load("<%= request.getContextPath()%>/secure/researchFilter?action=ajaxRenderResearchFilterGrouping");
+                }
+            });
+        });
+
+        $(document).on("change", "#menuResearchElement", function() {
+            $('#researchElement').val($('#menuResearchElement').val());
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/researchFilter?action=ajaxActionToggleElement",
+                data: $("form").serialize(),
+                success: function(response) {
+
+                }
+            });
+        });
+
+
+        $("#menuResearchFilterDateFrom").datetimepicker({
+            dateFormat: "yy-mm-dd",
+            timeFormat: "HH:mm",
+            defaultDate: $("#researchDateFrom").val(),
+            hourGrid: 4,
+            minuteGrid: 10,
+            showTime: false,
+            showButtonPanel: false,
+            onSelect: function(selectedDate) {
+                $("#researchDateFrom").val(selectedDate);
+
+                $.ajax({
+                    type: 'POST',
+                    url: "<%= request.getContextPath()%>/secure/researchFilter?action=ajaxActionSelectDateFrom",
+                    data: $("form").serialize(),
+                    success: function(response) {
+
+                    }
+                });
+
+                $("#researchDateFromLabel").text(selectedDate);
+            }
+        });
+
+        $("#menuResearchFilterDateTo").datetimepicker({
+            dateFormat: "yy-mm-dd",
+            timeFormat: "HH:mm",
+            defaultDate: $("#researchDateTo").val(),
+            hourGrid: 4,
+            minuteGrid: 10,
+            showTime: false,
+            showButtonPanel: false,
+            onSelect: function(selectedDate) {
+                $("#researchDateTo").val(selectedDate);
+
+                $.ajax({
+                    type: 'POST',
+                    url: "<%= request.getContextPath()%>/secure/researchFilter?action=ajaxActionSelectDateTo",
+                    data: $("form").serialize(),
+                    success: function(response) {
+
+                    }
+                });
+
+                $("#researchDateToLabel").text(selectedDate);
+            }
+        });
+
+
+
+
+        $(document).on("click", ".ruleMenuCombo", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/rule?action=ajaxActionSelectType",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable");
+                }
+            });
+        });
+
+
+
+        $(document).on("click", ".ruleApplyButton", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/<%= servletPath%>?action=update",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable", function() {
+                        /*$(".maskedInteger").mask("9999");*/
+                        /*$(".maskedInteger").autocomplete({
+                         source: [
+                         "ActionScript",
+                         "AppleScript"]
+                         });*/
+                        $("textarea").jqte();
+                    });
+                }
+            });
+        });
+
+        $(document).on("click", ".ruleModifyButton", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/<%= servletPath%>?action=modify",
+                data: $("form").serialize(),
+                success: function(response) {
+                    /*$("#bodyMenu").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyMenu");
+                     $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable", function() {$(".maskedInteger").spinner({ max: 1024 },{ min: 1 });});*/
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable", function() {
+                        /*$(".maskedInteger").mask("9999");*/
+                        /*$(".maskedInteger").autocomplete({
+                         source: [
+                         "ActionScript",
+                         "AppleScript"]
+                         });*/
+                        $("textarea").jqte();
+                    });
+                }
+            });
+        });
+
+        $(document).on("click", ".ruleCancelButton", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/<%= servletPath%>?action=cancel",
+                data: $("form").serialize(),
+                success: function(response) {
+                    /*$("#bodyMenu").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyMenu");*/
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable");
+                }
+            });
+        });
+
+        $(document).on("click", ".ruleInsertButton", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/<%= servletPath%>?action=insert",
+                data: $("form").serialize(),
+                success: function(response) {
+                    /*$("#bodyMenu").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyMenu");*/
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable", function() {
+                        $("textarea").jqte();
+                    });
+                }
+            });
+        });
+
+
+        $(document).on("click", ".ruleDeleteButton", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/<%= servletPath%>?action=delete",
+                data: $("form").serialize(),
+                success: function(response) {
+                    /*$("#bodyMenu").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyMenu");*/
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable");
+
+                }
+            });
+        });
+
+        $(document).on("click", ".ruleEnableDisableButton", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/<%= servletPath%>?action=toggleStatus",
+                data: $("form").serialize(),
+                success: function(response) {
+                    /*$("#bodyMenu").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyMenu");*/
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable");
+                }
+            });
+        });
+
+
+        /*Please Wait popup*/
+        $("a.loading").click(function() {
+            $("#pageMask").show();
+            $("#loadingPopup").delay(500).fadeIn("slow");
+        });
+
+        $(document).ajaxStart(function() {
+            $("#pageMask").show();
+            $("#loadingPopup").delay(500).fadeIn("slow");
+        });
+
+        $(document).ajaxStop(function() {
+            $("#pageMask").hide();
+            $("#loadingPopup").clearQueue();
+            $("#loadingPopup").fadeOut("slow");
+        });
+
+        /*tooltip*/
+
+        //$(document).tooltip({show: {effect: "none"}, hide: {effect: "none"}, position: {my: "left top", at: "left bottom", collision: "flipfit"}});
+
+
+        /*Delete popup*/
+        $(document).on("click", "#deleteConfirmButton", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/<%= servletPath%>?action=delete",
+                data: $("form").serialize(),
+                success: function(response) {
+                    location.reload(true);
+                }
+            });
+        });
+
+        $(document).on("click", "#prepareDeleteButton", function() {
+            $("#deletePopup").show();
+        });
+
+
+        /*Detail popup*/
+        $(document).on("click", ".expandDetailButton", function() {
+            $.ajax({
+                type: 'POST',
+                url: "<%= request.getContextPath()%>/secure/common?action=ajaxActionExpandResultsRow",
+                data: $("form").serialize(),
+                success: function(response) {
+                    $("#bodyResultsTable").load("<%= request.getContextPath()%>/secure/<%= servletPath%>?action=ajaxRenderBodyResultsTable", function() {
+
+                    });
+                    //$(this).parent().parent().next().slideToggle();
+                    //google.load("visualization", "1", {packages:["corechart"]});
+                    //google.setOnLoadCallback(drawChart);
+                }
+            });
+            return false;
+        });
+
+
+
+    <% if (request.getAttribute("error") != null) {%>
+        $("#errorPopup").fadeIn("fast");
+    <% }%>
+    });
+</script>
